@@ -1,26 +1,19 @@
 <%- include('partials/header') %>
-    <main>
-        <h1><%= title %></h1>
-        
-        <p>Explore our active volunteer opportunities:</p>
-        
-        <ul>
-            <% projects.forEach(project => { %>
-                <% 
-                    const formattedDate = new Date(project.project_date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                    });
-                %>
-                <li>
-                    <strong><%= formattedDate %></strong>: 
-                    <%= project.title %> 
-                    (<em><%= project.organization_name %></em>)
-                    <br>
-                    <small>📍 <%= project.location %> — <%= project.description %></small>
-                </li>
-            <% }); %>
-        </ul>
-    </main>
+<main>
+    <h1><%= title %></h1>
+    <p>Here are the upcoming service projects:</p>
+    <ul>
+        <% projects.forEach(project => { %>
+            <li>
+                <a href="/project/<%= project.project_id %>">
+                    <strong><%= project.title %></strong>
+                </a> 
+                — Organized by: 
+                <a href="/organization/<%= project.organization_id %>">
+                    <%= project.organization_name %>
+                </a>
+            </li>
+        <% }); %>
+    </ul>
+</main>
 <%- include('partials/footer') %>
