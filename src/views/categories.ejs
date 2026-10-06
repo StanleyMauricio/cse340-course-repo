@@ -7,7 +7,9 @@
                 <a href="/category/<%= cat.category_id %>">
                     <strong><%= cat.name %></strong>
                 </a>
-                <p><%= cat.description %></p>
+                <% if (cat.description) { %>
+                    <p><%= cat.description %></p>
+                <% } %>
             </li>
         <% }); %>
     </ul>

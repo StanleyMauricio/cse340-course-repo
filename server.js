@@ -3,6 +3,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
 import router from './src/routes.js';
+import session from 'express-session';
+import flash from './src/middleware/flash.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -17,6 +19,10 @@ const app = express();
 /**
  * Configure Express middleware
  */
+// Allow Express to receive and process common POST data (req.body)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -33,12 +39,21 @@ app.use((req, res, next) => {
     next(); 
 });
 
-// Middleware to make NODE_ENV 
+// Middleware to make NODE_ENV available in templates
 app.use((req, res, next) => {
     res.locals.NODE_ENV = NODE_ENV;
     next();
 });
+// Set up session management
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60 * 60 * 1000 } // Expiración en 1 hora
+}));
 
+// Use flash message middleware
+app.use(flash);
 // Use the imported router to handle routes
 app.use(router);
 

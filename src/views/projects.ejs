@@ -1,19 +1,24 @@
 <%- include('partials/header') %>
 <main>
     <h1><%= title %></h1>
-    <p>Here are the upcoming service projects:</p>
-    <ul>
-        <% projects.forEach(project => { %>
-            <li>
-                <a href="/project/<%= project.project_id %>">
-                    <strong><%= project.title %></strong>
-                </a> 
-                — Organized by: 
-                <a href="/organization/<%= project.organization_id %>">
-                    <%= project.organization_name %>
-                </a>
-            </li>
-        <% }); %>
-    </ul>
+   
+    <p><a href="/new-project" class="btn">Add a New Service Project</a></p>
+
+    <div class="projects-list">
+        <% if (projects && projects.length > 0) { %>
+            <ul>
+                <% projects.forEach(project => { %>
+                    <li>
+                        <a href="/project/<%= project.project_id %>">
+                            <%= project.title %>
+                        </a>
+                        - <%= project.location %> (<%= new Date(project.date).toLocaleDateString() %>)
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No upcoming service projects found.</p>
+        <% } %>
+    </div>
 </main>
 <%- include('partials/footer') %>
