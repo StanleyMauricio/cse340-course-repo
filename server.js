@@ -46,10 +46,10 @@ app.use((req, res, next) => {
 });
 // Set up session management
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'super_secret_key_default',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 60 * 60 * 1000 } // Expiración en 1 hora
+    cookie: { maxAge: 60 * 60 * 1000 } 
 }));
 
 // Use flash message middleware

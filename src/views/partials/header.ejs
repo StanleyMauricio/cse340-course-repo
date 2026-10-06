@@ -17,8 +17,8 @@
     </nav>
     <% const messages = flash(); %>
     <% Object.keys(messages).forEach(type => { %>
-        <% if (messages[type].length > 0) { %>
-            <div class="alert <%= type %>">
+        <% if (messages[type].length > 0) { %>            
+                <div class="alert <%= typeof locals.type !== 'undefined' ? type : '' %>">
                 <% messages[type].forEach(msg => { %>
                     <p><%= msg %></p>
                 <% }); %>
