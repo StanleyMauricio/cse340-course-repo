@@ -39,7 +39,7 @@ const showOrganizationsPage = async (req, res, next) => {
 
 const showOrganizationDetailsPage = async (req, res, next) => {
     try {
-        const organization = await getOrganizationById(req.params.id);
+        const organization = await getOrganizationById(req.params.organizationId);
         if (!organization) {
             const err = new Error('Organization Not Found');
             err.status = 404;
