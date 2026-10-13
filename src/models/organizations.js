@@ -5,9 +5,7 @@ const getAllOrganizations = async () => {
       SELECT
         organization_id,
         name,
-        description,
-        contact_email,
-        logo_filename
+        description
       FROM organization
       ORDER BY name;
     `;
@@ -20,9 +18,7 @@ const getOrganizationById = async (organizationId) => {
       SELECT
         organization_id,
         name,
-        description,
-        contact_email,
-        logo_filename
+        description
       FROM organization
       WHERE organization_id = $1;
     `;
@@ -33,11 +29,12 @@ const getOrganizationById = async (organizationId) => {
 
 const createOrganization = async (name, description, contactEmail, logoFilename) => {
     const query = `
-      INSERT INTO organization (name, description, contact_email, logo_filename)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO organization (name, description)
+      VALUES ($1, $2)
       RETURNING organization_id
     `;
-    const queryParams = [name, description, contactEmail, logoFilename];
+    // Omitimos contactEmail y logoFilename si la base de datos no tiene esas columnas todavía
+    const queryParams = [name, description];
     const result = await db.query(query, queryParams);
 
     if (result.rows.length === 0) {
@@ -54,11 +51,11 @@ const createOrganization = async (name, description, contactEmail, logoFilename)
 const updateOrganization = async (organizationId, name, description, contactEmail, logoFilename) => {
     const query = `
         UPDATE organization
-        SET name = $1, description = $2, contact_email = $3, logo_filename = $4
-        WHERE organization_id = $5
+        SET name = $1, description = $2
+        WHERE organization_id = $3
         RETURNING organization_id;
     `;
-    const queryParams = [name, description, contactEmail, logoFilename, organizationId];
+    const queryParams = [name, description, organizationId];
     const result = await db.query(query, queryParams);
 
     if (result.rows.length === 0) {
