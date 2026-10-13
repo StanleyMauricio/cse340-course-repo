@@ -33,7 +33,7 @@ const createOrganization = async (name, description, contactEmail, logoFilename)
       VALUES ($1, $2)
       RETURNING organization_id
     `;
-    // Omitimos contactEmail y logoFilename si la base de datos no tiene esas columnas todavía
+    
     const queryParams = [name, description];
     const result = await db.query(query, queryParams);
 

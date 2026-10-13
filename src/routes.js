@@ -31,7 +31,12 @@ import {
 
 import { 
     showUserRegistrationForm, 
-    processUserRegistrationForm 
+    processUserRegistrationForm,
+    showLoginForm,
+    processLoginForm,
+    processLogout,
+    requireLogin,
+    showDashboard
 } from './controllers/users.js';
 
 const router = express.Router();
@@ -39,6 +44,14 @@ const router = express.Router();
 router.get('/', (req, res) => {
     res.redirect('/organizations');
 });
+
+// User authentication routes
+router.get('/login', showLoginForm);
+router.post('/login', processLoginForm);
+router.get('/logout', processLogout);
+
+// Protected dashboard route
+router.get('/dashboard', requireLogin, showDashboard);
 
 router.get('/projects', showProjectsPage);
 router.get('/new-project', showNewProjectForm);
@@ -57,7 +70,7 @@ router.get('/new-category', showNewCategoryForm);
 router.post('/new-category', categoryValidation, processNewCategoryForm);
 router.get('/category/:categoryId', showCategoryDetailsPage);
 router.get('/edit-category/:id', showEditCategoryForm);
-router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
+router.post('/edit-category/:id', categoryValidation, processEditProjectForm);
 
 router.get('/assign-categories/:projectId', showAssignCategoriesForm);
 router.post('/assign-categories/:projectId', processAssignCategoriesForm);

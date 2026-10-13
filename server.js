@@ -39,11 +39,6 @@ app.use((req, res, next) => {
     next(); 
 });
 
-// Middleware to make NODE_ENV available in templates
-app.use((req, res, next) => {
-    res.locals.NODE_ENV = NODE_ENV;
-    next();
-});
 // Set up session management
 app.use(session({
     secret: process.env.SESSION_SECRET || 'super_secret_key_default',
@@ -54,6 +49,17 @@ app.use(session({
 
 // Use flash message middleware
 app.use(flash);
+
+// Middleware to set global template variables (isLoggedIn, NODE_ENV, and safe messages fallback)
+app.use((req, res, next) => {
+    res.locals.isLoggedIn = Boolean(req.session && req.session.user);
+    res.locals.NODE_ENV = NODE_ENV;
+    if (!res.locals.messages) {
+        res.locals.messages = {};
+    }
+    next();
+});
+
 // Use the imported router to handle routes
 app.use(router);
 
@@ -66,22 +72,18 @@ app.use((req, res, next) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-    // Log error details for debugging
     console.error('Error occurred:', err.message);
     console.error('Stack trace:', err.stack);
     
-    // Determine status and template
     const status = err.status || 500;
     const template = status === 404 ? '404' : '500';
     
-    // Prepare data for the template
     const context = {
         title: status === 404 ? 'Page Not Found' : 'Server Error',
         error: err.message,
         stack: err.stack
     };
     
-    // Render the appropriate error template
     res.status(status).render(`errors/${template}`, context);
 });
 
