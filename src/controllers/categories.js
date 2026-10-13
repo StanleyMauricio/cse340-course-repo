@@ -15,7 +15,7 @@ const categoryValidation = [
         .isLength({ min: 3, max: 100 }).withMessage('Category name must be between 3 and 100 characters')
 ];
 
-// Muestra la lista de categorías
+
 const showCategoriesPage = async (req, res, next) => {
     try {
         const categories = await getAllCategories();
@@ -27,7 +27,6 @@ const showCategoriesPage = async (req, res, next) => {
         next(error);
     }
 };
-
 
 const showCategoryDetailsPage = async (req, res, next) => {
     try {
@@ -42,13 +41,13 @@ const showCategoryDetailsPage = async (req, res, next) => {
 
         res.render('category', {
             title: category.name,
-            category
+            category,
+            projects: category.projects // <-- Agregamos esta línea para que la vista encuentre la variable
         });
     } catch (error) {
         next(error);
     }
 };
-
 
 const showNewCategoryForm = (req, res) => {
     res.render('new-category', {

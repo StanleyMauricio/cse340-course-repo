@@ -15,15 +15,40 @@ const getAllCategories = async () => {
 
 
 const getCategoryDetails = async (categoryId) => {
-    const query = `
+    const categoryQuery = `
       SELECT
         category_id,
         name
       FROM category
       WHERE category_id = $1;
     `;
-    const result = await db.query(query, [categoryId]);
-    return result.rows.length > 0 ? result.rows[0] : null;
+    const categoryResult = await db.query(categoryQuery, [categoryId]);
+    
+    if (categoryResult.rows.length === 0) {
+        return null;
+    }
+
+    const category = categoryResult.rows[0];
+
+    // Corregido: se usa 'project' en lugar de 'service_project'
+    const projectsQuery = `
+      SELECT
+        p.project_id,
+        p.title,
+        p.description,
+        p.location,
+        p.project_date AS date
+      FROM project p
+      JOIN project_category pc ON p.project_id = pc.project_id
+      WHERE pc.category_id = $1
+      ORDER BY p.title;
+    `;
+    const projectsResult = await db.query(projectsQuery, [categoryId]);
+    
+    // Adjuntamos los proyectos para que la vista pueda iterar sobre ellos
+    category.projects = projectsResult.rows;
+
+    return category;
 };
 
 
