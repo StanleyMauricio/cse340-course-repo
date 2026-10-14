@@ -2,9 +2,11 @@
 <main>
     <h1>Categories</h1>
     
-    <div style="margin-bottom: 20px;">
-        <a href="/new-category" class="btn">Add New Category</a>
-    </div>
+    <% if (user && user.role_name === 'admin') { %>
+        <div style="margin-bottom: 20px;">
+            <a href="/new-category" class="btn">Add New Category</a>
+        </div>
+    <% } %>
 
     <ul>
         <% categories.forEach(cat => { %>

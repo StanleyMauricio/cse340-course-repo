@@ -1,8 +1,14 @@
 <%- include('partials/header') %>
 <main>
-    <h1><%= title %></h1>
-    <h2>Dashboard</h2>
-    <p>Name: <%= name %></p>
-    <p>Username: <%= email %></p>
+    <h1>Welcome, <%= typeof name !== 'undefined' ? name : (user ? user.name : '') %>!</h1>
+    <p>Email: <%= typeof email !== 'undefined' ? email : (user ? user.email : '') %></p>
+    <p>This is your user dashboard.</p>
+
+    <% if (typeof user !== 'undefined' && user && user.role_name === 'admin') { %>
+        <div class="admin-panel-actions" style="margin-top: 20px; padding: 15px; background: #f4f4f4; border-radius: 5px;">
+            <h3>Admin Panel</h3>
+            <p><a href="/admin/users" class="btn">View All Registered Users</a></p>
+        </div>
+    <% } %>
 </main>
 <%- include('partials/footer') %>

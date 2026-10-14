@@ -8,9 +8,11 @@
         <p><strong>Contact Email:</strong> <%= organization.contact_email %></p>
     </div>
 
-    <p>
-        <a href="/edit-organization/<%= organization.organization_id %>">Edit Organization</a>
-    </p>
+    <% if (user && user.role_name === 'admin') { %>
+        <p>
+            <a href="/edit-organization/<%= organization.organization_id %>">Edit Organization</a>
+        </p>
+    <% } %>
 
     <p>
         <a href="/organizations">Back to Organizations</a>

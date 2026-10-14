@@ -36,7 +36,9 @@ import {
     processLoginForm,
     processLogout,
     requireLogin,
-    showDashboard
+    requireRole,
+    showDashboard,
+    showUsersManagementPage
 } from './controllers/users.js';
 
 const router = express.Router();
@@ -53,30 +55,40 @@ router.get('/logout', processLogout);
 // Protected dashboard route
 router.get('/dashboard', requireLogin, showDashboard);
 
+// Public / General views for viewing listings and details
 router.get('/projects', showProjectsPage);
-router.get('/new-project', showNewProjectForm);
-router.post('/new-project', projectValidation, processNewProjectForm);
+
 router.get('/project/:projectId', showProjectDetailsPage);
-router.get('/edit-project/:id', showEditProjectForm);
-router.post('/edit-project/:id', projectValidation, processEditProjectForm);
+
 
 router.get('/organizations', showOrganizationsPage);
-router.get('/new-organization', showNewOrganizationForm);
-router.post('/new-organization', processNewOrganizationForm);
+
 router.get('/organization/:organizationId', showOrganizationDetailsPage);
+router.get('/organizations/:organizationId', showOrganizationDetailsPage);
 
 router.get('/categories', showCategoriesPage);
-router.get('/new-category', showNewCategoryForm);
-router.post('/new-category', categoryValidation, processNewCategoryForm);
-router.get('/category/:categoryId', showCategoryDetailsPage);
-router.get('/edit-category/:id', showEditCategoryForm);
-router.post('/edit-category/:id', categoryValidation, processEditProjectForm);
 
-router.get('/assign-categories/:projectId', showAssignCategoriesForm);
-router.post('/assign-categories/:projectId', processAssignCategoriesForm);
+router.get('/category/:categoryId', showCategoryDetailsPage);
+
+// Admin-only protected routes (Creation, Editing, and Assignment)
+router.get('/new-project', requireRole('admin'), showNewProjectForm);
+router.post('/new-project', requireRole('admin'), projectValidation, processNewProjectForm);
+router.get('/edit-project/:id', requireRole('admin'), showEditProjectForm);
+router.post('/edit-project/:id', requireRole('admin'), projectValidation, processEditProjectForm);
+
+router.get('/new-organization', requireRole('admin'), showNewOrganizationForm);
+router.post('/new-organization', requireRole('admin'), processNewOrganizationForm);
+
+router.get('/new-category', requireRole('admin'), showNewCategoryForm);
+router.post('/new-category', requireRole('admin'), categoryValidation, processNewCategoryForm);
+router.get('/edit-category/:id', requireRole('admin'), showEditCategoryForm);
+router.post('/edit-category/:id', requireRole('admin'), categoryValidation, processEditProjectForm);
+
+router.get('/assign-categories/:projectId', requireRole('admin'), showAssignCategoriesForm);
+router.post('/assign-categories/:projectId', requireRole('admin'), processAssignCategoriesForm);
 
 // User registration routes
 router.get('/register', showUserRegistrationForm);
 router.post('/register', processUserRegistrationForm);
-
+router.get('/admin/users', requireLogin, requireRole('admin'), showUsersManagementPage);
 export default router;

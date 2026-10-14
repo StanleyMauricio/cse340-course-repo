@@ -1,93 +1,123 @@
 import bcrypt from 'bcrypt';
-import { createUser, findUserByEmail, verifyPassword } from '../models/users.js';
+import { createUserByEmail, findUserByEmail, getAllUsersWithRoles } from '../models/users.js';
 
-const showUserRegistrationForm = (req, res) => {
-    res.render('register', { title: 'Register' });
+export const showUserRegistrationForm = (req, res) => {
+    res.render('register', {
+        title: 'Register',
+        formData: {},
+        errors: []
+    });
 };
 
-const processUserRegistrationForm = async (req, res) => {
-    const { name, email, password } = req.body;
+export const processUserRegistrationForm = async (req, res, next) => {
     try {
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(password, salt);
-        const userId = await createUser(name, email, passwordHash);
-        req.flash('success', 'Registration successful! Please log in.');
+        const { name, email, password } = req.body;
+        
+        const existingUser = await findUserByEmail(email);
+        if (existingUser) {
+            return res.render('register', {
+                title: 'Register',
+                formData: { name, email },
+                errors: [{ msg: 'Email is already registered.' }]
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // Por defecto se asigna el rol de usuario normal (role_id = 2 o según tu BD)
+        await createUserByEmail(name, email, hashedPassword, 2);
+
         res.redirect('/login');
     } catch (error) {
-        console.error('Error registering user:', error);
-        req.flash('error', 'An error occurred during registration. Please try again.');
-        res.redirect('/register');
+        next(error);
     }
 };
 
-const showLoginForm = (req, res) => {
-    res.render('login', { title: 'Login' });
+export const showLoginForm = (req, res) => {
+    res.render('login', {
+        title: 'Login',
+        error: null
+    });
 };
 
-const processLoginForm = async (req, res) => {
-    const { email, password } = req.body;
+export const processLoginForm = async (req, res, next) => {
     try {
+        const { email, password } = req.body;
+        
         const user = await findUserByEmail(email);
         if (!user) {
-            req.flash('error', 'Invalid email or password.');
-            return res.redirect('/login');
+            return res.render('login', {
+                title: 'Login',
+                error: 'Invalid email or password.'
+            });
         }
 
-        const isMatch = await verifyPassword(password, user.password_hash);
-        if (!isMatch) {
-            req.flash('error', 'Invalid email or password.');
-            return res.redirect('/login');
+        const match = await bcrypt.compare(password, user.password_hash);
+        if (!match) {
+            return res.render('login', {
+                title: 'Login',
+                error: 'Invalid email or password.'
+            });
         }
 
+        // Guardar sesión del usuario incluyendo su rol
         req.session.user = {
-            id: user.user_id,
+            user_id: user.user_id,
             name: user.name,
             email: user.email,
-            role: user.role_name
+            role_name: user.role_name
         };
 
-        req.flash('success', 'Welcome back, ' + user.name + '!');
         res.redirect('/dashboard');
     } catch (error) {
-        console.error('Error logging in:', error);
-        req.flash('error', 'An error occurred during login.');
-        res.redirect('/login');
+        next(error);
     }
 };
 
-const processLogout = (req, res) => {
+export const processLogout = (req, res, next) => {
     req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-        }
+        if (err) return next(err);
         res.redirect('/login');
     });
 };
 
-const requireLogin = (req, res, next) => {
-    if (!req.session || !req.session.user) {
-        req.flash('error', 'You must be logged in to access that page.');
-        return res.redirect('/login');
+// Middleware para verificar que haya sesión iniciada
+export const requireLogin = (req, res, next) => {
+    if (req.session && req.session.user) {
+        return next();
     }
-    next();
+    res.redirect('/login');
 };
 
-const showDashboard = (req, res) => {
-    console.log('Dashboard!');
-    const user = req.session.user;
-    res.render('llego la peticion al dashboard', { 
-        title: 'Dashboard',
-        name: user.name,
-        email: user.email
-    });
+// Middleware para verificar el rol de administrador
+export const requireRole = (role) => {
+    return (req, res, next) => {
+        if (req.session && req.session.user && req.session.user.role_name === role) {
+            return next();
+        }
+        res.redirect('/dashboard');
+    };
 };
-
-export { 
-    showUserRegistrationForm, 
-    processUserRegistrationForm, 
-    showLoginForm, 
-    processLoginForm, 
-    processLogout,
-    requireLogin,
-    showDashboard
+export const showDashboard = async (req, res, next) => {
+    try {
+        res.render('dashboard', {
+            title: 'User Dashboard',
+            name: req.session.user?.name || '',
+            email: req.session.user?.email || '',
+            user: req.session.user || null
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+export const showUsersManagementPage = async (req, res, next) => {
+    try {
+        const users = await getAllUsersWithRoles();
+        res.render('admin-users', {
+            title: 'Manage Users',
+            users: users,
+            user: req.session.user || null
+        });
+    } catch (error) {
+        next(error);
+    }
 };

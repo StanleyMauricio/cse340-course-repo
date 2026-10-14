@@ -1,16 +1,50 @@
-<%- include('partials/header') %>
-<main>
-    <h1>Our Partner Organizations</h1>
-    <p>Here are a few of our partner organizations:</p>
-    <ul>
-        <% organizations.forEach(org => { %>
-            <li>
-                <img src="/images/<%= org.logo_filename %>" alt="<%= org.name %> logo" width="100">
-                <a href="/organization/<%= org.organization_id %>"><%= org.name %></a>: <%= org.contact_email %>
-            </li>
-        <% }); %>
-    </ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | CSE 340 Service Network</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/organizations">Organizations</a>
+            <a href="/projects">Projects</a>
+            <% if (typeof user !== 'undefined' && user) { %>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/logout">Logout</a>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            <% } %>
+        </nav>
+    </header>
 
-    <p><a href="/new-organization">Add a new organization</a></p>
-</main>
-<%- include('partials/footer') %>
+    <main class="container">
+        <h1><%= title %></h1>
+        
+        <ul class="organization-list">
+            <% if (organizations && organizations.length > 0) { %>
+                <% organizations.forEach(org => { %>
+                    <li>
+                        <a href="/organizations/<%= org.organization_id %>"><%= org.name %></a>
+                        <p><%= org.description %></p>
+                    </li>
+                <% }); %>
+            <% } else { %>
+                <p>No organizations found.</p>
+            <% } %>
+        </ul>
+
+        <% if (typeof user !== 'undefined' && user && user.role_name === 'admin') { %>
+            <a href="/new-organization" class="btn">Add New Organization</a>
+        <% } %>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 CSE 340 Service Network. (<%= NODE_ENV %> mode)</p>
+    </footer>
+</body>
+</html>
