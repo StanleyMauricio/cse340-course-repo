@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS public.project (
         ON DELETE CASCADE
 );
 
--- 3. insert projects
+-- 3. Insert projects
 INSERT INTO public.project (organization_id, title, description, location, project_date) VALUES
 -- Organization 1
 (1, 'Community Garden Clean Up', 'Volunteers needed to help clear brush and plant veggies.', 'East Side Park', '2026-10-05'),
@@ -92,39 +92,36 @@ INSERT INTO public.project_category (project_id, category_id) VALUES
 (14, 2),
 (15, 2)
 ON CONFLICT DO NOTHING;
--- 1. Create the table roles
-CREATE TABLE IF NOT EXISTS roles (
+
+-- 8. Create the table roles
+CREATE TABLE IF NOT EXISTS public.roles (
     role_id SERIAL PRIMARY KEY,
     role_name VARCHAR(50) UNIQUE NOT NULL,
     role_description TEXT
 );
 
--- 2. Insert initial roles
-INSERT INTO roles (role_name, role_description) VALUES 
+-- 9. Insert initial roles
+INSERT INTO public.roles (role_name, role_description) VALUES 
     ('user', 'Standard user with basic access'),
     ('admin', 'Administrator with full system access')
 ON CONFLICT (role_name) DO NOTHING;
 
--- Verify the inserted roles
-SELECT * FROM roles;
--- 3. Crear la tabla users
-CREATE TABLE IF NOT EXISTS users (
+-- 10. Create the table users
+CREATE TABLE IF NOT EXISTS public.users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role_id INTEGER REFERENCES roles(role_id),
+    role_id INTEGER REFERENCES public.roles(role_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
--- Insert a test user
-INSERT INTO users (name, email, password_hash, role_id) 
-VALUES ('testuser', 'test@example.com', 'placeholder_hash', 1)
-ON CONFLICT (email) DO NOTHING;
 
--- Consult the users and their roles 
-SELECT u.user_id, u.name, u.email, r.role_name, r.role_description
-FROM users u
-JOIN roles r ON u.role_id = r.role_id;
-
--- DELETE the test user after verification
-DELETE FROM users WHERE email = 'test@example.com';
+-- 11. Create the volunteers table (corregido apuntando a public.project)
+CREATE TABLE IF NOT EXISTS public.volunteers (
+    user_id INT NOT NULL,
+    project_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, project_id),
+    CONSTRAINT fk_volunteer_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_volunteer_project FOREIGN KEY (project_id) REFERENCES public.project(project_id) ON DELETE CASCADE
+);

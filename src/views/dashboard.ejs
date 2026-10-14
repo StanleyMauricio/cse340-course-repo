@@ -4,8 +4,32 @@
     <p>Email: <%= typeof email !== 'undefined' ? email : (user ? user.email : '') %></p>
     <p>This is your user dashboard.</p>
 
+    <!-- Sección de Proyectos en los que es voluntario -->
+    <section style="margin-top: 30px;">
+        <h2>My Volunteered Projects</h2>
+        <% if (typeof volunteeredProjects !== 'undefined' && volunteeredProjects && volunteeredProjects.length > 0) { %>
+            <ul style="list-style: none; padding: 0;">
+                <% volunteeredProjects.forEach(project => { %>
+                    <li style="background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ddd;">
+                        <div>
+                            <strong><a href="/project/<%= project.project_id %>"><%= project.title %></a></strong>
+                            <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">
+                                <%= project.location %> - <%= new Date(project.date).toLocaleDateString() %>
+                            </p>
+                        </div>
+                        <form action="/project/<%= project.project_id %>/unvolunteer" method="POST" style="margin: 0;">
+                            <button type="submit" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Darse de baja</button>
+                        </form>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>You haven't volunteered for any projects yet. <a href="/projects">Browse projects</a></p>
+        <% } %>
+    </section>
+
     <% if (typeof user !== 'undefined' && user && user.role_name === 'admin') { %>
-        <div class="admin-panel-actions" style="margin-top: 20px; padding: 15px; background: #f4f4f4; border-radius: 5px;">
+        <div class="admin-panel-actions" style="margin-top: 30px; padding: 15px; background: #f4f4f4; border-radius: 5px;">
             <h3>Admin Panel</h3>
             <p><a href="/admin/users" class="btn">View All Registered Users</a></p>
         </div>

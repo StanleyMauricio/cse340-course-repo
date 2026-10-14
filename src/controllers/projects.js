@@ -7,6 +7,11 @@ import {
 } from '../models/projects.js';
 import { getCategoriesByServiceProjectId } from '../models/categories.js';
 import { getAllOrganizations } from '../models/organizations.js';
+import { 
+    addVolunteer, 
+    removeVolunteer, 
+    checkVolunteerStatus 
+} from '../models/volunteers.js';
 
 // Validation rules for project form inputs
 const projectValidation = [
@@ -43,7 +48,7 @@ const showProjectsPage = async (req, res, next) => {
     }
 };
 
-// show the details of a specific project
+// show the details of a specific project (updated with volunteer status)
 const showProjectDetailsPage = async (req, res, next) => {
     try {
         const projectId = req.params.projectId || req.params.id;
@@ -57,11 +62,46 @@ const showProjectDetailsPage = async (req, res, next) => {
 
         const categories = await getCategoriesByServiceProjectId(projectId);
 
+        let isVolunteer = false;
+        if (req.session && req.session.user) {
+            isVolunteer = await checkVolunteerStatus(req.session.user.user_id, projectId);
+        }
+
         res.render('project', {
             title: project.title,
             project,
-            categories
+            categories,
+            isVolunteer
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// process user joining as a volunteer
+const joinProjectVolunteer = async (req, res, next) => {
+    try {
+        console.log("EJECUTANDO JOIN VOLUNTEER PARA PROYECTO:", req.params.projectId || req.params.id);
+        const projectId = req.params.projectId || req.params.id;
+        const userId = req.session.user.user_id;
+
+        await addVolunteer(userId, projectId);
+        
+        res.redirect(`/project/${projectId}`);
+    } catch (error) {
+        console.error("ERROR EN JOIN:", error);
+        next(error);
+    }
+};
+// process user leaving as a volunteer
+const leaveProjectVolunteer = async (req, res, next) => {
+    try {
+        const projectId = req.params.projectId || req.params.id;
+        const userId = req.session.user.user_id;
+
+        await removeVolunteer(userId, projectId);
+        
+        res.redirect(`/project/${projectId}`);
     } catch (error) {
         next(error);
     }
@@ -82,9 +122,6 @@ const showNewProjectForm = async (req, res, next) => {
 const processNewProjectForm = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        errors.array().forEach((error) => {
-            req.flash('error', error.msg);
-        });
         return res.redirect('/new-project');
     }
 
@@ -92,11 +129,9 @@ const processNewProjectForm = async (req, res) => {
 
     try {
         const newProjectId = await createProject(title, description, location, date, organizationId);
-        req.flash('success', 'New service project created successfully!');
         res.redirect(`/project/${newProjectId}`);
     } catch (error) {
         console.error('Error creating new project:', error);
-        req.flash('error', 'There was an error creating the service project.');
         res.redirect('/new-project');
     }
 };
@@ -115,7 +150,6 @@ const showEditProjectForm = async (req, res, next) => {
 
         const organizations = await getAllOrganizations();
         
-        // Formatear la fecha a YYYY-MM-DD para el campo <input type="date">
         const formattedDate = new Date(project.date).toISOString().split('T')[0];
         project.formattedDate = formattedDate;
 
@@ -135,9 +169,6 @@ const processEditProjectForm = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        errors.array().forEach((error) => {
-            req.flash('error', error.msg);
-        });
         return res.redirect(`/edit-project/${projectId}`);
     }
 
@@ -145,11 +176,9 @@ const processEditProjectForm = async (req, res) => {
 
     try {
         await updateProject(projectId, title, description, location, date, organizationId);
-        req.flash('success', 'Service project updated successfully!');
         res.redirect(`/project/${projectId}`);
     } catch (error) {
         console.error('Error updating project:', error);
-        req.flash('error', 'There was an error updating the service project.');
         res.redirect(`/edit-project/${projectId}`);
     }
 };
@@ -157,6 +186,8 @@ const processEditProjectForm = async (req, res) => {
 export { 
     showProjectsPage, 
     showProjectDetailsPage, 
+    joinProjectVolunteer,
+    leaveProjectVolunteer,
     showNewProjectForm, 
     processNewProjectForm, 
     showEditProjectForm,

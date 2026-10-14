@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { createUserByEmail, findUserByEmail, getAllUsersWithRoles } from '../models/users.js';
+import { getVolunteeredProjectsByUser } from '../models/volunteers.js';
 
 export const showUserRegistrationForm = (req, res) => {
     res.render('register', {
@@ -23,7 +24,7 @@ export const processUserRegistrationForm = async (req, res, next) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        // Por defecto se asigna el rol de usuario normal (role_id = 2 o según tu BD)
+        
         await createUserByEmail(name, email, hashedPassword, 2);
 
         res.redirect('/login');
@@ -59,7 +60,7 @@ export const processLoginForm = async (req, res, next) => {
             });
         }
 
-        // Guardar sesión del usuario incluyendo su rol
+        // Guardar sesión 
         req.session.user = {
             user_id: user.user_id,
             name: user.name,
@@ -80,7 +81,7 @@ export const processLogout = (req, res, next) => {
     });
 };
 
-// Middleware para verificar que haya sesión iniciada
+// Middleware to check if the user is logged in
 export const requireLogin = (req, res, next) => {
     if (req.session && req.session.user) {
         return next();
@@ -97,18 +98,24 @@ export const requireRole = (role) => {
         res.redirect('/dashboard');
     };
 };
+
 export const showDashboard = async (req, res, next) => {
     try {
+        const userId = req.session.user.user_id;
+        const volunteeredProjects = await getVolunteeredProjectsByUser(userId);
+
         res.render('dashboard', {
             title: 'User Dashboard',
             name: req.session.user?.name || '',
             email: req.session.user?.email || '',
-            user: req.session.user || null
+            user: req.session.user || null,
+            volunteeredProjects
         });
     } catch (error) {
         next(error);
     }
 };
+
 export const showUsersManagementPage = async (req, res, next) => {
     try {
         const users = await getAllUsersWithRoles();

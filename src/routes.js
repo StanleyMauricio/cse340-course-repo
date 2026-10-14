@@ -3,6 +3,8 @@ import express from 'express';
 import { 
     showProjectsPage, 
     showProjectDetailsPage, 
+    joinProjectVolunteer,
+    leaveProjectVolunteer,
     showNewProjectForm, 
     processNewProjectForm,
     showEditProjectForm,
@@ -60,6 +62,9 @@ router.get('/projects', showProjectsPage);
 
 router.get('/project/:projectId', showProjectDetailsPage);
 
+// Protected Volunteer routes (Requieren que el usuario haya iniciado sesión)
+router.post('/project/:projectId/volunteer', requireLogin, joinProjectVolunteer);
+router.post('/project/:projectId/unvolunteer', requireLogin, leaveProjectVolunteer);
 
 router.get('/organizations', showOrganizationsPage);
 
@@ -91,4 +96,5 @@ router.post('/assign-categories/:projectId', requireRole('admin'), processAssign
 router.get('/register', showUserRegistrationForm);
 router.post('/register', processUserRegistrationForm);
 router.get('/admin/users', requireLogin, requireRole('admin'), showUsersManagementPage);
+
 export default router;
