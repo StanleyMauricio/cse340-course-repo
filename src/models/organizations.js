@@ -1,5 +1,15 @@
 import db from './db.js';
 
+
+const getLogoFilename = (id) => {
+    switch (Number(id)) {
+        case 1: return 'brightfuture-logo.png';
+        case 2: return 'greenharvest-logo.png';
+        case 3: return 'unityserve-logo.png';
+        default: return 'placeholder-logo.png';
+    }
+};
+
 const getAllOrganizations = async () => {
     const query = `
       SELECT
@@ -10,7 +20,11 @@ const getAllOrganizations = async () => {
       ORDER BY name;
     `;
     const result = await db.query(query);
-    return result.rows;
+    
+    return result.rows.map(org => ({
+        ...org,
+        logo_filename: getLogoFilename(org.organization_id)
+    }));
 };
 
 const getOrganizationById = async (organizationId) => {
@@ -24,7 +38,11 @@ const getOrganizationById = async (organizationId) => {
     `;
     const queryParams = [organizationId];
     const result = await db.query(query, queryParams);
-    return result.rows.length > 0 ? result.rows[0] : null;
+    if (result.rows.length === 0) return null;
+    
+    const org = result.rows[0];
+    org.logo_filename = getLogoFilename(org.organization_id);
+    return org;
 };
 
 const createOrganization = async (name, description, contactEmail, logoFilename) => {
@@ -41,9 +59,7 @@ const createOrganization = async (name, description, contactEmail, logoFilename)
         throw new Error('Failed to create organization');
     }
 
-    if (process.env.ENABLE_SQL_LOGGING === 'true') {
-        console.log('Created new organization with ID:', result.rows[0].organization_id);
-    }
+    
 
     return result.rows[0].organization_id;
 };
@@ -62,9 +78,7 @@ const updateOrganization = async (organizationId, name, description, contactEmai
         throw new Error('Organization not found');
     }
 
-    if (process.env.ENABLE_SQL_LOGGING === 'true') {
-        console.log('Updated organization with ID:', organizationId);
-    }
+
 
     return result.rows[0].organization_id;
 };
