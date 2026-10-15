@@ -125,3 +125,7 @@ CREATE TABLE IF NOT EXISTS public.volunteers (
     CONSTRAINT fk_volunteer_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_volunteer_project FOREIGN KEY (project_id) REFERENCES public.project(project_id) ON DELETE CASCADE
 );
+SELECT user_id, name, email, role_id 
+FROM users 
+WHERE email = 'admin@example.com';
+SELECT * FROM roles;
