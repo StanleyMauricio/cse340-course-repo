@@ -8,10 +8,11 @@
 
     <h3>Categories:</h3>
     <% if (categories && categories.length > 0) { %>
-        <ul style="display: flex; gap: 10px; list-style: none; padding: 0;">
+        <!-- Categorías en formato vertical exigido por la rúbrica -->
+        <ul style="display: flex; flex-direction: column; gap: 8px; list-style: none; padding: 0;">
             <% categories.forEach(cat => { %>
                 <li>
-                    <a href="/category/<%= cat.category_id %>" style="background: #e0e0e0; padding: 4px 8px; border-radius: 4px; text-decoration: none;">
+                    <a href="/category/<%= cat.category_id %>" style="display: block; background: #e0e0e0; padding: 6px 12px; border-radius: 4px; text-decoration: none; width: fit-content;">
                         <%= cat.name %>
                     </a>
                 </li>

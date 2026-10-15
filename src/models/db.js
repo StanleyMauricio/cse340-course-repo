@@ -2,15 +2,14 @@ import pg from 'pg';
 
 const pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL?.includes('render.com')
+    ssl: process.env.NODE_ENV === 'production' || (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('localhost') && !process.env.DATABASE_URL.includes('127.0.0.1'))
         ? { rejectUnauthorized: false }
         : false,
-    max: 10, // Máximo de conexiones en el pool
-    idleTimeoutMillis: 30000, // Cierra conexiones inactivas después de 30s limpiamente
-    connectionTimeoutMillis: 10000, // Tiempo de espera para conectar (10 segundos)
+    max: 10, 
+    idleTimeoutMillis: 30000, 
+    connectionTimeoutMillis: 10000, 
 });
 
-// Manejar errores de conexiones inactivas para evitar caídas del servidor
 pool.on('error', (err, client) => {
     console.error('Unexpected error on idle PostgreSQL client', err);
 });
@@ -23,6 +22,9 @@ const testConnection = async () => {
         console.error('Database connection error:', err);
     }
 };
+
+// Ejecutar la prueba de conexión al iniciar
+testConnection();
 
 const query = async (text, params) => {
     try {

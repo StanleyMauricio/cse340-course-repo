@@ -12,6 +12,7 @@
             <a href="/">Home</a>
             <a href="/organizations">Organizations</a>
             <a href="/projects">Projects</a>
+            <a href="/categories">Categories</a>
             <% if (typeof user !== 'undefined' && user) { %>
                 <a href="/dashboard">Dashboard</a>
                 <a href="/logout">Logout</a>
@@ -27,10 +28,22 @@
         
         <ul class="organization-list">
             <% if (organizations && organizations.length > 0) { %>
-                <% organizations.forEach(org => { %>
-                    <li>
-                        <a href="/organizations/<%= org.organization_id %>"><%= org.name %></a>
-                        <p><%= org.description %></p>
+                <% organizations.forEach((org, index) => { %>
+                    <% 
+                        // Asignar una imagen única según el índice o el nombre de la organización
+                        let logoImg = 'placeholder-logo.png';
+                        if (org.name.includes('Community')) logoImg = 'unityserve-logo.png';
+                        else if (org.name.includes('EcoTech')) logoImg = 'brightfuture-logo.png';
+                        else if (org.name.includes('Green')) logoImg = 'greenharvest-logo.png';
+                    %>
+                    <li class="org-item" style="margin-bottom: 25px; border-bottom: 1px solid #ccc; padding-bottom: 15px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="/images/<%= logoImg %>" alt="<%= org.name %> logo" style="width: 70px; height: 50px; object-fit: contain; background: white; padding: 2px; border-radius: 4px;">
+                            <div>
+                                <a href="/organizations/<%= org.organization_id %>" style="font-size: 1.2em; font-weight: bold;"><%= org.name %></a>
+                                <p style="margin: 5px 0 0 0;"><%= org.description %></p>
+                            </div>
+                        </div>
                     </li>
                 <% }); %>
             <% } else { %>

@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-    <header>
-        <nav>
+    <header class="site-header">
+        <nav class="nav-links">
             <a href="/">Home</a>
             <a href="/organizations">Organizations</a>
             <a href="/projects">Projects</a>
@@ -21,9 +21,14 @@
                 <a href="/register">Register</a>
             <% } %>
         </nav>
+        <div class="header-logo">
+            <a href="/">
+                <img src="/images/cse340-service-network.png" alt="CSE 340 Logo" style="max-height: 50px;">
+            </a>
+        </div>
     </header>
 
-    <!-- Mensajes Flash -->
+    <!-- Flash Messages -->
     <% if (typeof messages !== 'undefined' && messages && messages.error) { %>
         <div class="flash-message error"><%= messages.error %></div>
     <% } %>
