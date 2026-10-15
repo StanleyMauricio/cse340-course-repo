@@ -5,17 +5,30 @@
     <div class="organization-details">
         <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo" width="150">
         <p><strong>Description:</strong> <%= organization.description %></p>
-        <p><strong>Contact Email:</strong> <%= organization.contact_email %></p>
+        <p><strong>Contact Email:</strong> <%= organization.contact_email || 'Not provided' %></p>
     </div>
 
+    <h2>Projects by this Organization</h2>
+    <% if (projects && projects.length > 0) { %>
+        <ul>
+            <% projects.forEach(project => { %>
+                <li>
+                    <a href="/project/<%= project.project_id %>"><%= project.title %></a> - <%= project.date ? new Date(project.date).toLocaleDateString() : '' %> (<%= project.location %>)
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No projects found for this organization.</p>
+    <% } %>
+
     <% if (user && user.role_name === 'admin') { %>
-        <p>
-            <a href="/edit-organization/<%= organization.organization_id %>">Edit Organization</a>
+        <p style="margin-top: 20px;">
+            <a href="/edit-organization/<%= organization.organization_id %>" class="btn">Edit Organization</a>
         </p>
     <% } %>
 
-    <p>
-        <a href="/organizations">Back to Organizations</a>
+    <p style="margin-top: 20px;">
+        <a href="/organizations">&larr; Back to Organizations</a>
     </p>
 </main>
 <%- include('partials/footer') %>

@@ -12,7 +12,7 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-app.set('view engine', 'ejs');
+
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
@@ -29,8 +29,10 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'cse340-secret-key',
     resave: false,
     saveUninitialized: false,
+    proxy: true, 
     cookie: { 
         secure: NODE_ENV === 'production',
+        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
 }));
