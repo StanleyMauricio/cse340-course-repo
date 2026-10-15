@@ -2,10 +2,11 @@
 <main>
     <h1><%= category.name %></h1>
 
-
-    <div style="margin-bottom: 20px;">
-        <a href="/edit-category/<%= category.category_id %>" class="btn">Edit Category</a>
-    </div>
+    <% if (typeof user !== 'undefined' && user && user.role_name === 'admin') { %>
+        <div style="margin-bottom: 20px;">
+            <a href="/edit-category/<%= category.category_id %>" class="btn">Edit Category</a>
+        </div>
+    <% } %>
 
     <h2>Projects in this Category</h2>
     <% if (projects && projects.length > 0) { %>
