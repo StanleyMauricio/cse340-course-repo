@@ -75,22 +75,22 @@ router.get('/categories', showCategoriesPage);
 
 router.get('/category/:categoryId', showCategoryDetailsPage);
 
-// Admin-only protected routes (Creation, Editing, and Assignment)
-router.get('/new-project', requireRole('admin'), showNewProjectForm);
-router.post('/new-project', requireRole('admin'), projectValidation, processNewProjectForm);
-router.get('/edit-project/:id', requireRole('admin'), showEditProjectForm);
-router.post('/edit-project/:id', requireRole('admin'), projectValidation, processEditProjectForm);
+// Admin-only protected routes (Requieren login y rol de administrador)
+router.get('/new-project', requireLogin, requireRole('admin'), showNewProjectForm);
+router.post('/new-project', requireLogin, requireRole('admin'), projectValidation, processNewProjectForm);
+router.get('/edit-project/:id', requireLogin, requireRole('admin'), showEditProjectForm);
+router.post('/edit-project/:id', requireLogin, requireRole('admin'), projectValidation, processEditProjectForm);
 
-router.get('/new-organization', requireRole('admin'), showNewOrganizationForm);
-router.post('/new-organization', requireRole('admin'), processNewOrganizationForm);
+router.get('/new-organization', requireLogin, requireRole('admin'), showNewOrganizationForm);
+router.post('/new-organization', requireLogin, requireRole('admin'), processNewOrganizationForm);
 
-router.get('/new-category', requireRole('admin'), showNewCategoryForm);
-router.post('/new-category', requireRole('admin'), categoryValidation, processNewCategoryForm);
-router.get('/edit-category/:id', requireRole('admin'), showEditCategoryForm);
-router.post('/edit-category/:id', requireRole('admin'), categoryValidation, processEditProjectForm);
+router.get('/new-category', requireLogin, requireRole('admin'), showNewCategoryForm);
+router.post('/new-category', requireLogin, requireRole('admin'), categoryValidation, processNewCategoryForm);
+router.get('/edit-category/:id', requireLogin, requireRole('admin'), showEditCategoryForm);
+router.post('/edit-category/:id', requireLogin, requireRole('admin'), categoryValidation, processEditProjectForm);
 
-router.get('/assign-categories/:projectId', requireRole('admin'), showAssignCategoriesForm);
-router.post('/assign-categories/:projectId', requireRole('admin'), processAssignCategoriesForm);
+router.get('/assign-categories/:projectId', requireLogin, requireRole('admin'), showAssignCategoriesForm);
+router.post('/assign-categories/:projectId', requireLogin, requireRole('admin'), processAssignCategoriesForm);
 
 // User registration routes
 router.get('/register', showUserRegistrationForm);
