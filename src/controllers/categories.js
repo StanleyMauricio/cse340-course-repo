@@ -42,7 +42,7 @@ const showCategoryDetailsPage = async (req, res, next) => {
         res.render('category', {
             title: category.name,
             category,
-            projects: category.projects // <-- Agregamos esta línea para que la vista encuentre la variable
+            projects: category.projects 
         });
     } catch (error) {
         next(error);
@@ -55,13 +55,10 @@ const showNewCategoryForm = (req, res) => {
     });
 };
 
-
-const processNewCategoryForm = async (req, res) => {
+const processNewCategoryForm = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        errors.array().forEach((error) => {
-            req.flash('error', error.msg);
-        });
+
         return res.redirect('/new-category');
     }
 
@@ -69,12 +66,11 @@ const processNewCategoryForm = async (req, res) => {
 
     try {
         await createCategory(name);
-        req.flash('success', 'New category created successfully!');
+
         res.redirect('/categories');
     } catch (error) {
         console.error('Error creating category:', error);
-        req.flash('error', 'There was an error creating the category.');
-        res.redirect('/new-category');
+        next(error);
     }
 };
 
@@ -99,15 +95,12 @@ const showEditCategoryForm = async (req, res, next) => {
     }
 };
 
-
-const processEditCategoryForm = async (req, res) => {
+const processEditCategoryForm = async (req, res, next) => {
     const categoryId = req.params.id;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        errors.array().forEach((error) => {
-            req.flash('error', error.msg);
-        });
+
         return res.redirect(`/edit-category/${categoryId}`);
     }
 
@@ -115,12 +108,11 @@ const processEditCategoryForm = async (req, res) => {
 
     try {
         await updateCategory(categoryId, name);
-        req.flash('success', 'Category updated successfully!');
+
         res.redirect(`/category/${categoryId}`);
     } catch (error) {
         console.error('Error updating category:', error);
-        req.flash('error', 'There was an error updating the category.');
-        res.redirect(`/edit-category/${categoryId}`);
+        next(error);
     }
 };
 
@@ -147,8 +139,7 @@ const showAssignCategoriesForm = async (req, res, next) => {
     }
 };
 
-
-const processAssignCategoriesForm = async (req, res) => {
+const processAssignCategoriesForm = async (req, res, next) => {
     const projectId = req.params.projectId;
     let { categories } = req.body;
 
@@ -160,12 +151,11 @@ const processAssignCategoriesForm = async (req, res) => {
 
     try {
         await updateCategoryAssignments(projectId, categories);
-        req.flash('success', 'Categories updated successfully.');
+        
         res.redirect(`/project/${projectId}`);
     } catch (error) {
         console.error('Error assigning categories:', error);
-        req.flash('error', 'There was an error updating the categories.');
-        res.redirect(`/assign-categories/${projectId}`);
+        next(error);
     }
 };
 

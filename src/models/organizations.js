@@ -1,6 +1,5 @@
 import db from './db.js';
 
-
 const getLogoFilename = (id) => {
     switch (Number(id)) {
         case 1: return 'brightfuture-logo.png';
@@ -10,7 +9,7 @@ const getLogoFilename = (id) => {
     }
 };
 
-const getAllOrganizations = async () => {
+export const getAllOrganizations = async () => {
     const query = `
       SELECT
         organization_id,
@@ -27,7 +26,7 @@ const getAllOrganizations = async () => {
     }));
 };
 
-const getOrganizationById = async (organizationId) => {
+export const getOrganizationById = async (organizationId) => {
     const query = `
       SELECT
         organization_id,
@@ -45,26 +44,18 @@ const getOrganizationById = async (organizationId) => {
     return org;
 };
 
-const createOrganization = async (name, description, contactEmail, logoFilename) => {
+export const createOrganization = async (name, description, contact_email, logo_filename) => {
     const query = `
-      INSERT INTO organization (name, description)
-      VALUES ($1, $2)
-      RETURNING organization_id
+        INSERT INTO organization (name, description)
+        VALUES ($1, $2)
+        RETURNING organization_id;
     `;
-    
-    const queryParams = [name, description];
-    const result = await db.query(query, queryParams);
-
-    if (result.rows.length === 0) {
-        throw new Error('Failed to create organization');
-    }
-
-    
-
+    const values = [name, description];
+    const result = await db.query(query, values);
     return result.rows[0].organization_id;
 };
 
-const updateOrganization = async (organizationId, name, description, contactEmail, logoFilename) => {
+export const updateOrganization = async (organizationId, name, description, contactEmail, logoFilename) => {
     const query = `
         UPDATE organization
         SET name = $1, description = $2
@@ -78,14 +69,8 @@ const updateOrganization = async (organizationId, name, description, contactEmai
         throw new Error('Organization not found');
     }
 
-
+    
 
     return result.rows[0].organization_id;
 };
 
-export {
-    getAllOrganizations,
-    getOrganizationById,
-    createOrganization,
-    updateOrganization
-};

@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 11. Create the volunteers table (corregido apuntando a public.project)
+-- 11. Create the volunteers table
 CREATE TABLE IF NOT EXISTS public.volunteers (
     user_id INT NOT NULL,
     project_id INT NOT NULL,
@@ -125,7 +125,11 @@ CREATE TABLE IF NOT EXISTS public.volunteers (
     CONSTRAINT fk_volunteer_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_volunteer_project FOREIGN KEY (project_id) REFERENCES public.project(project_id) ON DELETE CASCADE
 );
-SELECT user_id, name, email, role_id 
-FROM users 
-WHERE email = 'admin@example.com';
-SELECT * FROM roles;
+
+-- 12. Fix / Synchronize sequences to prevent duplicate key errors on inserts
+SELECT setval(pg_get_serial_sequence('organization', 'organization_id'), COALESCE(MAX(organization_id), 1)) FROM organization;
+SELECT setval(pg_get_serial_sequence('project', 'project_id'), COALESCE(MAX(project_id), 1)) FROM project;
+SELECT setval(pg_get_serial_sequence('category', 'category_id'), COALESCE(MAX(category_id), 1)) FROM category;
+SELECT setval(pg_get_serial_sequence('roles', 'role_id'), COALESCE(MAX(role_id), 1)) FROM roles;
+SELECT setval(pg_get_serial_sequence('users', 'user_id'), COALESCE(MAX(user_id), 1)) FROM users;
+SELECT setval(pg_get_serial_sequence('organization', 'organization_id'), COALESCE(MAX(organization_id), 1)) FROM organization;

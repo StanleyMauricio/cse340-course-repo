@@ -25,7 +25,7 @@ export const showOrganizationDetailsPage = async (req, res, next) => {
             return next(error);
         }
 
-        // Recuperar los proyectos asociados a esta organización
+        // Recovr the projects associated with the organization
         const projects = await getProjectsByOrganizationId(organizationId);
 
         res.render('organization', {
@@ -51,9 +51,9 @@ export const processNewOrganizationForm = async (req, res, next) => {
     try {
         const { name, description, contact_email, logo_filename } = req.body;
         await createOrganization(name, description, contact_email, logo_filename);
-        res.redirect('/organizations');
+        res.redirect('/organizations'); 
     } catch (error) {
         next(error);
     }
-    
+
 };
