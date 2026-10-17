@@ -25,7 +25,7 @@ export const processUserRegistrationForm = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        await createUserByEmail(name, email, hashedPassword, 2);
+        await createUserByEmail(name, email, hashedPassword, 1);
 
         res.redirect('/login');
     } catch (error) {
