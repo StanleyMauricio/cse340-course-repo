@@ -135,6 +135,7 @@ CREATE TABLE IF NOT EXISTS public.volunteers (
     CONSTRAINT fk_volunteer_project FOREIGN KEY (project_id) REFERENCES public.project(project_id) ON DELETE CASCADE
 );
 
+
 -- 12. Fix / Synchronize sequences to prevent duplicate key errors on inserts
 SELECT setval(pg_get_serial_sequence('organization', 'organization_id'), COALESCE(MAX(organization_id), 1)) FROM organization;
 SELECT setval(pg_get_serial_sequence('project', 'project_id'), COALESCE(MAX(project_id), 1)) FROM project;
