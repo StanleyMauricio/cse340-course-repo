@@ -1,9 +1,9 @@
 <%- include('partials/header') %>
 <main>
     <h1><%= title %></h1>
-    <h2>Project: <%= projectDetails ? projectDetails.title : '' %></h2>
+    <h2>Project: <%= project ? project.title : '' %></h2>
 
-    <form action="/assign-categories/<%= projectId %>" method="POST">
+    <form action="/assign-categories/<%= project.project_id %>" method="POST">
         <div class="form-group">
             <% if (categories && categories.length > 0) { %>
                 <% categories.forEach(category => { %>
@@ -11,9 +11,9 @@
                         <input
                             type="checkbox"
                             id="category-<%= category.category_id %>"
-                            name="categoryIds"
+                            name="categories"
                             value="<%= category.category_id %>"
-                            <%= assignedCategories.some(ac => ac.category_id === category.category_id) ? 'checked' : '' %>
+                            <%= (typeof assignedCategories !== 'undefined' && assignedCategories ? assignedCategories : []).some(ac => ac.category_id === category.category_id) ? 'checked' : '' %>
                         />
                         <label for="category-<%= category.category_id %>">
                             <%= category.name %>

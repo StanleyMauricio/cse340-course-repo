@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<main>
+    <h1><%= title %></h1>
+
+    <form action="/edit-organization/<%= organization.organization_id %>" method="POST">
+        <div class="form-group">
+            <label for="name">Organization Name</label>
+            <input type="text" id="name" name="name" value="<%= organization.name %>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required><%= organization.description %></textarea>
+        </div>
+
+        <button type="submit" class="btn">Update Organization</button>
+    </form>
+</main>
+<%- include('partials/footer') %>

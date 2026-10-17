@@ -16,13 +16,11 @@
             
             <% if (typeof user !== 'undefined' && user) { %>
                 <a href="/dashboard">Dashboard</a>
-                
+
                 
                 <% if (user.role_name === 'admin') { %>
                     <a href="/admin/users">Users</a>
-                    <a href="/new-organization">Add Organization</a>
-                    <a href="/new-project">Add Project</a>
-                    <a href="/new-category">Add Category</a>
+                    
                 <% } %>
 
                 <a href="/logout">Logout</a>

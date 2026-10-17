@@ -16,7 +16,9 @@ import {
     showOrganizationsPage, 
     showOrganizationDetailsPage, 
     showNewOrganizationForm, 
-    processNewOrganizationForm 
+    processNewOrganizationForm,
+    showEditOrganizationForm,
+    processEditOrganizationForm
 } from './controllers/organizations.js';
 
 import { 
@@ -83,11 +85,13 @@ router.post('/edit-project/:id', requireLogin, requireRole('admin'), projectVali
 
 router.get('/new-organization', requireLogin, requireRole('admin'), showNewOrganizationForm);
 router.post('/new-organization', requireLogin, requireRole('admin'), processNewOrganizationForm);
+router.get('/edit-organization/:organizationId', requireLogin, requireRole('admin'), showEditOrganizationForm);
+router.post('/edit-organization/:organizationId', requireLogin, requireRole('admin'), processEditOrganizationForm);
 
 router.get('/new-category', requireLogin, requireRole('admin'), showNewCategoryForm);
 router.post('/new-category', requireLogin, requireRole('admin'), categoryValidation, processNewCategoryForm);
 router.get('/edit-category/:id', requireLogin, requireRole('admin'), showEditCategoryForm);
-router.post('/edit-category/:id', requireLogin, requireRole('admin'), categoryValidation, processEditProjectForm);
+router.post('/edit-category/:id', requireLogin, requireRole('admin'), categoryValidation, processEditCategoryForm);
 
 router.get('/assign-categories/:projectId', requireLogin, requireRole('admin'), showAssignCategoriesForm);
 router.post('/assign-categories/:projectId', requireLogin, requireRole('admin'), processAssignCategoriesForm);

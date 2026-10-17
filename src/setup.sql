@@ -1,3 +1,12 @@
+-- 0. cleanup existing tables 
+DROP TABLE IF EXISTS public.volunteers CASCADE;
+DROP TABLE IF EXISTS public.project_category CASCADE;
+DROP TABLE IF EXISTS public.project CASCADE;
+DROP TABLE IF EXISTS public.organization CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+DROP TABLE IF EXISTS public.roles CASCADE;
+DROP TABLE IF EXISTS public.category CASCADE;
+
 -- 1. Create table organization
 CREATE TABLE IF NOT EXISTS public.organization (
     organization_id SERIAL PRIMARY KEY,
@@ -132,4 +141,3 @@ SELECT setval(pg_get_serial_sequence('project', 'project_id'), COALESCE(MAX(proj
 SELECT setval(pg_get_serial_sequence('category', 'category_id'), COALESCE(MAX(category_id), 1)) FROM category;
 SELECT setval(pg_get_serial_sequence('roles', 'role_id'), COALESCE(MAX(role_id), 1)) FROM roles;
 SELECT setval(pg_get_serial_sequence('users', 'user_id'), COALESCE(MAX(user_id), 1)) FROM users;
-SELECT setval(pg_get_serial_sequence('organization', 'organization_id'), COALESCE(MAX(organization_id), 1)) FROM organization;

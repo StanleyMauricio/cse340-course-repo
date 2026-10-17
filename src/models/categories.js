@@ -96,7 +96,8 @@ const getCategoriesByServiceProjectId = async (projectId) => {
 const assignCategoryToProject = async (categoryId, projectId) => {
     const query = `
         INSERT INTO project_category (category_id, project_id)
-        VALUES ($1, $2);
+        VALUES ($1, $2)
+        ON CONFLICT (project_id, category_id) DO NOTHING;
     `;
     await db.query(query, [categoryId, projectId]);
 };
