@@ -102,18 +102,18 @@ INSERT INTO public.project_category (project_id, category_id) VALUES
 (15, 2)
 ON CONFLICT DO NOTHING;
 
--- 8. Create the table roles
+-- 8. Create the table roles (Definida ANTES de users)
 CREATE TABLE IF NOT EXISTS public.roles (
     role_id SERIAL PRIMARY KEY,
     role_name VARCHAR(50) UNIQUE NOT NULL,
     role_description TEXT
 );
 
--- 9. Insert initial roles
-INSERT INTO public.roles (role_name, role_description) VALUES 
-    ('user', 'Standard user with basic access'),
-    ('admin', 'Administrator with full system access')
-ON CONFLICT (role_name) DO NOTHING;
+-- 9. Insert initial roles (ID 1 = user, ID 2 = admin)
+INSERT INTO public.roles (role_id, role_name, role_description) VALUES 
+    (1, 'user', 'Standard user with basic access'),
+    (2, 'admin', 'Administrator with full system access')
+ON CONFLICT (role_id) DO NOTHING;
 
 -- 10. Create the table users
 CREATE TABLE IF NOT EXISTS public.users (
@@ -134,7 +134,6 @@ CREATE TABLE IF NOT EXISTS public.volunteers (
     CONSTRAINT fk_volunteer_user FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_volunteer_project FOREIGN KEY (project_id) REFERENCES public.project(project_id) ON DELETE CASCADE
 );
-
 
 -- 12. Fix / Synchronize sequences to prevent duplicate key errors on inserts
 SELECT setval(pg_get_serial_sequence('organization', 'organization_id'), COALESCE(MAX(organization_id), 1)) FROM organization;
